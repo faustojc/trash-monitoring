@@ -1,8 +1,9 @@
 import {Card, Dropdown, Navbar, NavbarCollapse, Table} from "flowbite-react";
 import {signOut} from "firebase/auth";
-import {firebaseAuth} from "../domain/firebase.js";
+import {firebaseAuth, firebaseDatabase} from "../domain/firebase.js";
 import {useNavigate} from "@remix-run/react";
 import {useEffect, useState} from "react";
+import {collection, getDocs, limit, orderBy, query} from 'firebase/firestore';
 
 import {
     CategoryScale,
@@ -79,10 +80,24 @@ function generateData(range) {
 export default function Dashboard() {
     const navigate = useNavigate();
 
-    const [today, setDate] = useState(new Date());
+    const [today, setToday] = useState(new Date());
+    const [weightData, setWeightData] = useState([]);
+
+    const fetchData = async () => {
+        const q = query(
+            collection(firebaseDatabase, "weights"),
+            orderBy("created_at", "desc"),
+            limit(5)
+        );
+
+        const snapshot = await getDocs(q);
+        setWeightData(snapshot.docs.map(doc => doc.data()));
+    }
 
     useEffect(() => {
-        const timer = setInterval(() => setDate(new Date()), 1000);
+        fetchData().then(r => null);
+
+        const timer = setInterval(() => setToday(new Date()), 1000);
         return () => clearInterval(timer);
     }, []);
 
@@ -167,38 +182,24 @@ export default function Dashboard() {
                             </p>
                             <Table hoverable={true}>
                                 <Table.Head>
-                                    <Table.HeadCell>
-                                        Weight
-                                    </Table.HeadCell>
-                                    <Table.HeadCell>
-                                        Value
-                                    </Table.HeadCell>
+                                    <Table.HeadCell>Weight</Table.HeadCell>
+                                    <Table.HeadCell>High Capacity</Table.HeadCell>
                                 </Table.Head>
                                 <Table.Body className="divide-y">
-                                    <Table.Row className="bg-white dark:border-gray-700 dark:bg-gray-800">
-                                        <Table.Cell
-                                            className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                                            Weight
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            230 kg
-                                        </Table.Cell>
-                                    </Table.Row>
+                                    {weightData.map((item, index) => (
+                                        <Table.Row key={index}
+                                                   className="bg-white dark:border-gray-700 dark:bg-gray-800">
+                                            <Table.Cell
+                                                className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
+                                                {item.value}
+                                            </Table.Cell>
+                                            <Table.Cell>{item.isHighCapacity ? 'True' : 'False'}</Table.Cell>
+                                        </Table.Row>
+                                    ))}
                                 </Table.Body>
                             </Table>
                         </Card>
                         <div className={'flex gap-4 mt-10'}>
-                            <Card className={'max-w-[540px]'}>
-                                <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                    Weight History
-                                </h5>
-                                <p className="font-normal text-gray-700 dark:text-gray-400">
-                                    Monday
-                                </p>
-                                <p className="font-normal text-gray-700 dark:text-gray-400">
-                                    20 kg
-                                </p>
-                            </Card>
                             <Card className={'max-w-[540px]'}>
                                 <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                                     Average Weight
