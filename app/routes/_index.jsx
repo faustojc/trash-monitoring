@@ -4,6 +4,7 @@ import {firebaseAuth} from "../domain/firebase.js";
 import {signInWithEmailAndPassword} from "firebase/auth";
 import {useNavigate} from "@remix-run/react";
 import toast from "react-hot-toast";
+import logo from "../resources/images/logo.png"
 
 export default function Index() {
     const [loading, setLoading] = useState(false);
@@ -36,7 +37,7 @@ export default function Index() {
         <div className={"w-screen h-screen flex justify-center items-center"}>
             <Card className={"w-96"}>
                 <div className="mb-3 flex justify-center">
-                    <img className={"max-w-[150px]"} alt={"Logo"} src={"../app/resources/images/logo.png"}/>
+                    <img className={"max-w-[150px]"} alt={"Logo"} src={logo}/>
                 </div>
                 <h2 className={'mb-4 text-center'}>Login to your account</h2>
                 <form className="flex max-w-lg flex-col gap-4" onSubmit={handleLogin}>

@@ -5,6 +5,9 @@ import {useNavigate} from "@remix-run/react";
 import {useEffect, useState} from "react";
 import {collection, getDocs, limit, orderBy, query} from 'firebase/firestore';
 
+import logo from "../resources/images/logo.png";
+import net from "../resources/images/net.jpg";
+
 import {
     CategoryScale,
     Chart as ChartJS,
@@ -116,7 +119,7 @@ export default function Dashboard() {
         <>
             <Navbar fluid rounded>
                 <Navbar.Brand>
-                    <img src="../../app/resources/images/logo.png" className="mr-3 h-6 sm:h-9" alt="logo"/>
+                    <img src={`${logo}`} className="mr-3 h-6 sm:h-9" alt="logo"/>
                     <span
                         className="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Monitoring
                 </span>
@@ -149,7 +152,7 @@ export default function Dashboard() {
                     <div>
                         <Card className={"max-w-[540px] mb-10"}
                               imgAlt={'Monitor image'}
-                              imgSrc="../../app/resources/images/net.jpg"
+                              imgSrc={`${net}`}
                         >
                             <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                                 Monitoring Image
