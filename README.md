@@ -1,36 +1,32 @@
-# Welcome to Remix + Vite!
+# Netlify Remix Template
 
-📖 See the [Remix docs](https://remix.run/docs) and the [Remix Vite docs](https://remix.run/docs/en/main/guides/vite) for details on supported features.
+Welcome to the Netlify Remix Template project. If you were expecting this to be your site, run `remix init` in the root of this project to get started.
+
+To use the template, run
+
+```bash
+npx create-remix@latest --template netlify/remix-template
+```
+
+This project includes:
+
+- Netlify Functions template for Remix sites
+- Netlify Edge Functions template for Remix sites
+
+From the `create-remix` command, you may pass `--netlify-edge` or `--no-netlify-edge` to generate a template that uses Netlify Edge or Serverless functions explicitly. Without passing this option, the create workflow will ask you which you would prefer.
 
 ## Development
 
-Run the Vite dev server:
+There is no need to run `npm install` as this is a template. The Remix CLI will install the dependencies for you. Make changes to files as you see fit. If there are transformations for files for either the Netlify Functions or Netlify Edge Functions template, make the appropriate changes to the `remix.init/index.js` file.
 
-```shellscript
-npm run dev
+If you're new to Remix stacks and the remix.init concept, see the official [Remix Stacks](https://remix.run/stacks) documentation.
+
+### Testing your changes
+
+Run
+
+```bash
+npx create-remix@latest --template ./remix-template
 ```
 
-## Deployment
-
-First, build your app for production:
-
-```sh
-npm run build
-```
-
-Then run the app in production mode:
-
-```sh
-npm start
-```
-
-Now you'll need to pick a host to deploy it to.
-
-### DIY
-
-If you're familiar with deploying Node applications, the built-in Remix app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-- `build/server`
-- `build/client`
+to test your changes to the template. Follow the steps the Remix CLI prompts you with to create a new project. Ensure to test for both the Netlify Functions template and the Netlify Edge Functions template.
