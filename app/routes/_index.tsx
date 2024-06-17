@@ -1,6 +1,6 @@
 import {Button, Card, Label, Spinner, TextInput} from "flowbite-react";
-import {useState} from "react";
-import {firebaseAuth} from "../domain/firebase.js";
+import React, {FormEvent, useState} from "react";
+import {firebaseAuth} from "~/domain/firebase";
 import {signInWithEmailAndPassword} from "firebase/auth";
 import {useNavigate} from "@remix-run/react";
 import toast from "react-hot-toast";
@@ -13,7 +13,7 @@ export default function Index() {
 
     const navigate = useNavigate();
 
-    const handleLogin = async (e) => {
+    const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (email.length !== 0 && password.length !== 0) {
             setLoading(true);
