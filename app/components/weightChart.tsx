@@ -1,14 +1,6 @@
 import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {DocumentData} from "firebase/firestore";
-import {
-    eachDayOfInterval,
-    eachMonthOfInterval,
-    endOfMonth,
-    endOfWeek,
-    format,
-    startOfMonth,
-    startOfWeek
-} from "date-fns";
+import {eachDayOfInterval, eachMonthOfInterval, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek} from "date-fns";
 import {useMemo} from "react";
 
 interface ChartProps {
@@ -24,8 +16,8 @@ export default function WeightChart({weightData, timeRange}: Readonly<ChartProps
             item
         ) => {
             const dateKey = timeRange === "weekly"
-                ? format(item.created_at.toDate(), "EEE")
-                : format(item.created_at.toDate(), "MMM");
+                ? format(item.created_at, "EEE")
+                : format(item.created_at, "MMM");
 
             acc[dateKey] = acc[dateKey] || {value: 0, count: 0};
             acc[dateKey].value += item.value;

@@ -2,17 +2,8 @@ import {Badge, Card} from "flowbite-react";
 import {ArrowDown, ArrowUp} from "flowbite-react-icons/outline";
 import {useEffect, useState} from "react";
 import {DocumentData} from "firebase/firestore";
-import {
-    endOfDay,
-    endOfMonth,
-    endOfWeek,
-    startOfDay,
-    startOfMonth,
-    startOfWeek,
-    subDays,
-    subMonths,
-    subWeeks
-} from "date-fns";
+import {subDays, subMonths, subWeeks} from "date-fns";
+import {filterData} from "~/domain/filterData";
 
 interface AverageWeightProps {
     weightData: DocumentData[];
@@ -25,55 +16,33 @@ const AverageWeight = ({weightData = [], timeRange}: AverageWeightProps) => {
 
     useEffect(() => {
         const now = new Date();
-        let startOfCurrentRange, endOfCurrentRange;
-        let startOfPreviousRange, endOfPreviousRange;
+        const currentRangeData = filterData(weightData, now);
 
+        let prevDate = new Date();
         if (timeRange === "daily") {
-            startOfCurrentRange = startOfDay(now);
-            endOfCurrentRange = endOfDay(now);
-            startOfPreviousRange = startOfDay(subDays(now, 1));
-            endOfPreviousRange = endOfDay(subDays(now, 1));
+            prevDate = subDays(now, 1);
         } else if (timeRange === "weekly") {
-            startOfCurrentRange = startOfWeek(now);
-            endOfCurrentRange = endOfWeek(now);
-            startOfPreviousRange = startOfWeek(subWeeks(now, 1));
-            endOfPreviousRange = endOfWeek(subWeeks(now, 1));
+            prevDate = subWeeks(now, 1);
         } else {
-            startOfCurrentRange = startOfMonth(now);
-            endOfCurrentRange = endOfMonth(now);
-            startOfPreviousRange = startOfMonth(subMonths(now, 1));
-            endOfPreviousRange = endOfMonth(subMonths(now, 1));
+            prevDate = subMonths(now, 1);
         }
 
-        //Filter data for current range
-        const currentRangeData = weightData.filter((item) => {
-            const itemDate = new Date(item.created_at);
-            return itemDate >= startOfCurrentRange && itemDate <= endOfCurrentRange;
-        });
-        // Filter for previous week's data
-        const previousRangeData = weightData.filter((item) => {
-            const itemDate = new Date(item.created_at);
-            return itemDate >= startOfPreviousRange && itemDate <= endOfPreviousRange;
-        });
+        const previousRangeData = filterData(weightData, prevDate, timeRange);
 
         // Calculate average weights
         const currentWeekAverage = currentRangeData.length
-            ? currentRangeData.reduce((sum, item) => sum + item.value, 0) /
-            currentRangeData.length
+            ? currentRangeData.reduce((sum, item) => sum + item.value, 0) / currentRangeData.length
             : 0;
         const previousWeekAverage = previousRangeData.length
-            ? previousRangeData.reduce((sum, item) => sum + item.value, 0) /
-            previousRangeData.length
+            ? previousRangeData.reduce((sum, item) => sum + item.value, 0) / previousRangeData.length
             : 0;
 
         // Calculate percentage change
-        const change =
-            previousWeekAverage === 0
-                ? 0
-                : ((currentWeekAverage - previousWeekAverage) / previousWeekAverage) *
-                100;
-        setPercentageChange(isNaN(change) ? 0 : change);
+        const change = previousWeekAverage === 0
+            ? 0
+            : ((currentWeekAverage - previousWeekAverage) / previousWeekAverage) * 100;
 
+        setPercentageChange(isNaN(change) ? 0 : change);
         setAverageWeight(Math.round(currentWeekAverage * 100) / 100);
     }, [weightData, timeRange]);
 
@@ -91,7 +60,7 @@ const AverageWeight = ({weightData = [], timeRange}: AverageWeightProps) => {
                     color={percentageChange >= 0 ? "success" : "failure"}
                     icon={percentageChange >= 0 ? ArrowUp : ArrowDown}
                 >
-                    {Math.abs(percentageChange).toFixed(2)}%
+                    {Math.round(percentageChange * 100) / 100}%
                 </Badge>
             </div>
         </Card>

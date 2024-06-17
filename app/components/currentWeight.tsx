@@ -2,6 +2,7 @@ import {Badge, Card} from "flowbite-react";
 import {ArrowDown, ArrowUp} from "flowbite-react-icons/outline";
 import {useEffect, useState} from "react";
 import {DocumentData} from "firebase/firestore";
+import {filterData} from "~/domain/filterData";
 
 interface CurrentWeightProps {
     weightData: DocumentData[] | undefined;
@@ -10,18 +11,19 @@ interface CurrentWeightProps {
 
 const CurrentWeight = ({weightData = [], timeRange}: CurrentWeightProps) => {
     const [percentageChange, setPercentageChange] = useState(0);
+    const filteredData = filterData(weightData, new Date(), timeRange);
 
     useEffect(() => {
-        if (weightData.length >= 2) { // Make sure there's enough data for comparison
-            const currentWeight = weightData[0]?.value || 0;
-            const previousWeight = weightData[1]?.value || 0;
+        if (filteredData.length >= 2) {
+            const currentWeight = filteredData[0]?.value || 0;
+            const previousWeight = filteredData[1]?.value || 0;
 
             const change = ((currentWeight - previousWeight) / previousWeight) * 100;
             setPercentageChange(isNaN(change) ? 0 : change);
         } else {
             setPercentageChange(0);
         }
-    }, [weightData, timeRange]);
+    }, [filteredData, timeRange]);
 
     return (
         <Card className="flex-grow bg-red-50 shadow-none">
@@ -30,7 +32,7 @@ const CurrentWeight = ({weightData = [], timeRange}: CurrentWeightProps) => {
             </h5>
             <div className="flex flex-row justify-between">
                 <p className="text-2xl font-bold text-gray-700 dark:text-gray-400">
-                    {weightData.length > 0 ? `${weightData[0].value.toFixed(2)} kg` : "No data"}
+                    {weightData.length > 0 ? `${filteredData[0].value.toFixed(2)} kg` : "No data"}
                 </p>
                 {weightData.length >= 2 && ( // Only show Badge if there are at least 2 data points
                     <Badge

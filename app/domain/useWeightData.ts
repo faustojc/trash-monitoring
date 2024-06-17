@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {endOfDay, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek, subMonths} from "date-fns";
+import {subMonths} from "date-fns";
 import {collection, DocumentData, getDocs, onSnapshot, query, Timestamp, where} from "firebase/firestore";
 import {firebaseDatabase} from "~/domain/firebase";
 
@@ -14,54 +14,41 @@ export function useWeightData(timeRange: "daily" | "weekly" | "monthly" = "daily
             where("created_at", ">=", Timestamp.fromDate(subMonths(now, 1))),
             where("created_at", "<=", Timestamp.fromDate(now))
         );
+
         getDocs(initialQuery).then((snapshot) => {
             const initialData = snapshot.docs.map((doc) => doc.data());
+
+            initialData.forEach((item) => {
+                item.created_at = item.created_at.toDate();
+            });
+
             setWeightData(initialData);
         });
 
         // Listen for updates in the "weights" collection
         const unsubscribe = onSnapshot(collection(firebaseDatabase, "weights"), (snapshot) => {
-                snapshot.docChanges().forEach((change) => {
-                    if (change.type === "added") {
-                        setWeightData(prevData => [...prevData, change.doc.data()]);
-                    }
-                });
+                snapshot.docChanges()
+                    .filter((change) => change.type === "added")
+                    .forEach((change) => {
+                        const item = change.doc.data();
+                        item.created_at = item.created_at.toDate();
+
+                        setWeightData((prev) => {
+                            if (prev.some((prevItem) => prevItem.created_at.getTime() === item.created_at.getTime())) {
+                                return prev;
+                            } else {
+                                return [...prev, item];
+                            }
+                        });
+                    });
             },
             (error) => {
                 console.log("Error listening for changes:", error);
             }
         );
 
-        return () => unsubscribe();
+        return unsubscribe();
     }, []);
 
-    let filteredData = weightData;
-
-    if (timeRange === "daily") {
-        const startOfCurrentRange = startOfDay(new Date());
-        const endOfCurrentRange = endOfDay(new Date());
-
-        filteredData = weightData.filter((item) => {
-            const itemDate = new Date(item.created_at);
-            return itemDate >= startOfCurrentRange && itemDate <= endOfCurrentRange;
-        });
-    } else if (timeRange === "weekly") {
-        const startOfCurrentRange = startOfWeek(new Date());
-        const endOfCurrentRange = endOfWeek(new Date());
-
-        filteredData = weightData.filter((item) => {
-            const itemDate = new Date(item.created_at);
-            return itemDate >= startOfCurrentRange && itemDate <= endOfCurrentRange;
-        });
-    } else { //monthly
-        const startOfCurrentRange = startOfMonth(new Date());
-        const endOfCurrentRange = endOfMonth(new Date());
-
-        filteredData = weightData.filter((item) => {
-            const itemDate = new Date(item.created_at);
-            return itemDate >= startOfCurrentRange && itemDate <= endOfCurrentRange;
-        });
-    }
-
-    return {filteredData, weightData};
+    return weightData;
 }

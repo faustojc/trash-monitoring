@@ -20,7 +20,7 @@ export default function Dashboard() {
     const [today, setToday] = useState(new Date());
     const [activeTab, setActiveTab] = useState<"daily" | "weekly" | "monthly">("daily");
 
-    const {filteredData, weightData} = useWeightData(activeTab);
+    const weightData = useWeightData(activeTab);
 
     useEffect(() => {
         const timer = setInterval(() => setToday(new Date()), 1000);
@@ -92,7 +92,7 @@ export default function Dashboard() {
                 </div>
                 <div className={'flex flex-col gap-5 md:mx-0 mx-4'}>
                     <div className={'flex flex-row gap-4 items-stretch'}>
-                        <CurrentWeight weightData={filteredData} timeRange={activeTab}/>
+                        <CurrentWeight weightData={weightData} timeRange={activeTab}/>
                         <AverageWeight weightData={weightData} timeRange={activeTab}/>
                     </div>
                     <div className={'flex lg:flex-row flex-col gap-4 items-stretch mb-10'}>
@@ -100,7 +100,7 @@ export default function Dashboard() {
                             <h5 className="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                                 Weight Graph
                             </h5>
-                            <WeightChart weightData={filteredData} timeRange={activeTab}/>
+                            <WeightChart weightData={weightData} timeRange={activeTab}/>
                         </Card>
                         <Card className={"flex-3 lg:w-1/3 max-w-full"}
                               imgAlt={'Monitor image'}
