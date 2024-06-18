@@ -16,9 +16,9 @@ const AverageWeight = ({weightData = [], timeRange}: AverageWeightProps) => {
 
     useEffect(() => {
         const now = new Date();
-        const currentRangeData = filterData(weightData, now);
+        const currentRangeData = filterData(weightData, now, timeRange);
 
-        let prevDate = new Date();
+        let prevDate: Date;
         if (timeRange === "daily") {
             prevDate = subDays(now, 1);
         } else if (timeRange === "weekly") {
@@ -54,7 +54,7 @@ const AverageWeight = ({weightData = [], timeRange}: AverageWeightProps) => {
             </h5>
             <div className="flex flex-row justify-between">
                 <p className="text-2xl font-bold text-gray-700 dark:text-gray-400">
-                    {averageWeight.toFixed(2)} kg
+                    {Math.round(averageWeight * 100) / 100} kg
                 </p>
                 <Badge
                     color={percentageChange >= 0 ? "success" : "failure"}

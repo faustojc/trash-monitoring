@@ -15,8 +15,8 @@ const CurrentWeight = ({weightData = [], timeRange}: CurrentWeightProps) => {
 
     useEffect(() => {
         if (filteredData.length >= 2) {
-            const currentWeight = filteredData[0]?.value || 0;
-            const previousWeight = filteredData[1]?.value || 0;
+            const currentWeight = filteredData[filteredData.length - 1]?.value || 0;
+            const previousWeight = filteredData[filteredData.length - 2]?.value || 0;
 
             const change = ((currentWeight - previousWeight) / previousWeight) * 100;
             setPercentageChange(isNaN(change) ? 0 : change);
@@ -32,14 +32,14 @@ const CurrentWeight = ({weightData = [], timeRange}: CurrentWeightProps) => {
             </h5>
             <div className="flex flex-row justify-between">
                 <p className="text-2xl font-bold text-gray-700 dark:text-gray-400">
-                    {weightData.length > 0 ? `${filteredData[0].value.toFixed(2)} kg` : "No data"}
+                    {filteredData.length > 0 ? `${Math.round(filteredData[filteredData.length - 1].value * 100) / 100} kg` : "No data"}
                 </p>
                 {weightData.length >= 2 && ( // Only show Badge if there are at least 2 data points
                     <Badge
                         color={percentageChange >= 0 ? "success" : "failure"}
                         icon={percentageChange >= 0 ? ArrowUp : ArrowDown}
                     >
-                        {Math.abs(percentageChange).toFixed(2)}%
+                        {Math.round(percentageChange * 100) / 100}%
                     </Badge>
                 )}
             </div>

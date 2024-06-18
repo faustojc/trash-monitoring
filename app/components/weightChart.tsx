@@ -1,7 +1,7 @@
-import {CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
+import {Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis} from "recharts";
 import {DocumentData} from "firebase/firestore";
-import {eachDayOfInterval, eachMonthOfInterval, endOfMonth, endOfWeek, format, startOfMonth, startOfWeek} from "date-fns";
-import {useMemo} from "react";
+import {format} from "date-fns";
+import {filterData} from "~/domain/filterData";
 
 interface ChartProps {
     weightData: DocumentData[];
@@ -9,73 +9,32 @@ interface ChartProps {
 }
 
 export default function WeightChart({weightData, timeRange}: Readonly<ChartProps>) {
-    // Calculate average weight for each date or month
-    const averagedData = weightData.reduce(
-        (
-            acc: { [key: string]: { value: number; count: number } },
-            item
-        ) => {
-            const dateKey = timeRange === "weekly"
-                ? format(item.created_at, "EEE")
-                : format(item.created_at, "MMM");
-
-            acc[dateKey] = acc[dateKey] || {value: 0, count: 0};
-            acc[dateKey].value += item.value;
-            acc[dateKey].count++;
-            return acc;
-        },
-        {}
-    );
-
-    const chartData = Object.entries(averagedData).map(([date, {value, count}]) => ({
-        created_at: date,
-        value: Math.round(value / count),
-    }));
-
     const tickFormatter = (tick: string) => tick;
 
-    // Dynamic domain based on time range
-    const domain = useMemo(() => {
-        if (timeRange === "weekly") {
-            const now = new Date();
-            return [
-                format(startOfWeek(now), "EEE"),
-                format(endOfWeek(now), "EEE"),
-            ];
-        } else {
-            const now = new Date();
-            return [
-                format(startOfMonth(now), "MMM"),
-                format(endOfMonth(now), "MMM"),
-            ];
-        }
-    }, [timeRange]);
+    // Getting the filtered data from the custom hook
+    const filteredData = filterData(weightData, new Date(), timeRange);
 
-    const ticks = useMemo(() => {
-        const now = new Date();
-
-        if (timeRange === "weekly") {
-            return eachDayOfInterval({
-                start: startOfWeek(now),
-                end: endOfWeek(now)
-            }).map((date) => format(date, "EEE"));
-        } else {
-            return eachMonthOfInterval({
-                start: startOfMonth(now),
-                end: endOfMonth(now),
-            }).map((date) => format(date, "MMM"));
-        }
-    }, [timeRange]);
+    const chartData = filteredData.map((item) => ({
+        created_at: format(item.created_at, "MMM d, h:mm aa"),
+        value: item.value,
+    }));
 
     return (
         <ResponsiveContainer width={"100%"} height={400}>
-            <LineChart data={chartData} margin={{top: 5, right: 30, left: 20, bottom: 5}}>
-                <CartesianGrid strokeDasharray="5 5" stroke="#ccc"/>
-                <XAxis dataKey="created_at" tickFormatter={tickFormatter} domain={domain} ticks={ticks}/>
-                <YAxis/>
-                <Line type="monotone" dataKey="value" stroke="#8884d8"/>
+            <BarChart
+                data={chartData}
+                margin={{top: 5, bottom: 5}}
+            >
+                <CartesianGrid strokeDasharray="3 3"/>
+                <XAxis dataKey="created_at"
+                       tickFormatter={tickFormatter}
+                       interval={0}
+                       allowDataOverflow={true}
+                />
+                <YAxis domain={['dataMin - 10', 'dataMax + 10']}/>
                 <Tooltip/>
-            </LineChart>
+                <Bar dataKey="value" fill={'#84c4d8'} barSize={'10%'} isAnimationActive={true}/>
+            </BarChart>
         </ResponsiveContainer>
     );
 }
