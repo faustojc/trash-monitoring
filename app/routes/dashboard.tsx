@@ -3,7 +3,7 @@ import {useState} from "react";
 import net from "../resources/images/net.jpg";
 
 import {useWeightData} from "~/domain/useWeightData";
-import CurrentWeight from "~/components/currentWeight";
+import LatestWeight from "~/components/latestWeight";
 import AverageWeight from "~/components/averageWeight";
 import WeightChart from "~/components/weightChart";
 import Navigation from "~/components/navigation";
@@ -38,7 +38,7 @@ export default function Dashboard() {
                 </div>
                 <div className={'flex flex-col gap-5 md:mx-0 mx-4'}>
                     <div className={'flex flex-row gap-4 items-stretch'}>
-                        <CurrentWeight weightData={weightData} timeRange={activeTab}/>
+                        <LatestWeight weightData={weightData} timeRange={activeTab}/>
                         <AverageWeight weightData={weightData} timeRange={activeTab}/>
                     </div>
                     <div className={'flex lg:flex-row flex-col gap-4 items-stretch mb-10'}>
