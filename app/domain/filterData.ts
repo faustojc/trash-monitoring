@@ -21,7 +21,7 @@ export function filterData(weightData: DocumentData[], timeRange: "daily" | "wee
 
 
     filteredData = filterDateRange(weightData, startOfCurrentRange, endOfCurrentRange).reduce((acc: { 'created_at': Date, value: number[] }[], item) => {
-        const date = new Date(item.created_at.toDateString());
+        const date = item.created_at;
 
         // check if the date is within the current range
         if (date >= startOfCurrentRange && date <= endOfCurrentRange) {

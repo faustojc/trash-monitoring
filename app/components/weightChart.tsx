@@ -36,7 +36,7 @@ export default function WeightChart({weightData, timeRange}: Readonly<ChartProps
                        textAnchor={chartData.length > 8 ? "start" : "middle"}
                        allowDataOverflow={false}
                 />
-                <YAxis domain={['dataMin - 10', 'dataMax + 10']}/>
+                <YAxis domain={['dataMin', 'auto']}/>
                 <Tooltip content={<CustomTooltip/>}/>
                 <Bar dataKey="value" fill={'#84c4d8'} barSize={chartData.length > 8 ? '4%' : '10%'} isAnimationActive={true}/>
             </BarChart>

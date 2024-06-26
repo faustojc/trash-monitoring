@@ -1,12 +1,12 @@
 import {Card, Tabs} from "flowbite-react";
 import {useState} from "react";
-import net from "../resources/images/net.jpg";
 
 import {useWeightData} from "~/domain/useWeightData";
 import LatestWeight from "~/components/latestWeight";
 import AverageWeight from "~/components/averageWeight";
 import WeightChart from "~/components/weightChart";
 import Navigation from "~/components/navigation";
+import ImageDisplay from "~/components/imageDisplay";
 
 
 export default function Dashboard() {
@@ -48,17 +48,7 @@ export default function Dashboard() {
                             </h5>
                             <WeightChart weightData={weightData} timeRange={activeTab}/>
                         </Card>
-                        <Card className={"flex-3 lg:w-1/3 max-w-full"}
-                              imgAlt={'Monitor image'}
-                              imgSrc={`${net}`}
-                        >
-                            <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                Monitoring Image
-                            </h5>
-                            <p className="font-normal text-gray-700 dark:text-gray-400">
-                                This image shows the current state of the waste.
-                            </p>
-                        </Card>
+                        <ImageDisplay/>
                     </div>
                 </div>
             </div>
