@@ -25,15 +25,29 @@ export function filterData(weightData: DocumentData[], timeRange: "daily" | "wee
 
         // check if the date is within the current range
         if (date >= startOfCurrentRange && date <= endOfCurrentRange) {
-            const key = date.toDateString();
+            let key: number = 0;
 
-            if (!acc.some((item) => item.created_at.toDateString() === key)) {
+            switch (timeRange) {
+                case 'daily':
+                    key = date.getHours();
+                    break;
+                case 'weekly':
+                    key = date.getDay();
+                    break;
+                case 'monthly':
+                    key = date.getMonth();
+                    break;
+            }
+
+            const containsKey = acc.some((item) => predicate(item, key, timeRange));
+
+            if (!containsKey) {
                 acc.push({
                     created_at: date,
                     value: [item.value]
                 });
             } else {
-                const index = acc.findIndex((item) => item.created_at.toDateString() === key);
+                const index = acc.findIndex((item) => predicate(item, key, timeRange));
                 acc[index].value.push(item.value);
             }
         }
@@ -47,8 +61,19 @@ export function filterData(weightData: DocumentData[], timeRange: "daily" | "wee
     return filteredData;
 }
 
-function filterDateRange(weightData: DocumentData[], startDate: Date, endDate: Date) {
+const filterDateRange = (weightData: DocumentData[], startDate: Date, endDate: Date) => {
     return weightData.filter((item) => {
         return item.created_at >= startDate && item.created_at <= endDate;
     });
+}
+
+const predicate = (item: { created_at: Date, value: number[] }, key: number, timeRange: "daily" | "weekly" | "monthly" = "daily") => {
+    switch (timeRange) {
+        case 'daily':
+            return item.created_at.getHours() === key;
+        case 'weekly':
+            return item.created_at.getDay() === key;
+        case 'monthly':
+            return item.created_at.getMonth() === key;
+    }
 }

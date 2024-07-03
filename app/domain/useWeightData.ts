@@ -1,12 +1,9 @@
 import {useEffect, useState} from "react";
-import {subMonths} from "date-fns";
-import {collection, DocumentData, getDocs, onSnapshot, query, Timestamp, where} from "firebase/firestore";
+import {collection, DocumentData, getDocs, onSnapshot} from "firebase/firestore";
 import {firebaseDatabase} from "~/domain/firebase";
 
 export function useWeightData(timeRange: "daily" | "weekly" | "monthly" = "daily") {
     const [weightData, setWeightData] = useState<DocumentData[]>([]);
-
-    const now = new Date();
 
     const unsubscribe = onSnapshot(
         collection(firebaseDatabase, "weights"),
@@ -36,18 +33,15 @@ export function useWeightData(timeRange: "daily" | "weekly" | "monthly" = "daily
     );
 
     useEffect(() => {
-        const initialQuery = query(
-            collection(firebaseDatabase, "weights"),
-            where("created_at", ">=", Timestamp.fromDate(subMonths(now, 1))),
-            where("created_at", "<=", Timestamp.fromDate(now))
-        );
-
-        getDocs(initialQuery).then((snapshot) => {
+        getDocs(collection(firebaseDatabase, "weights")).then((snapshot) => {
             const initialData = snapshot.docs.map((doc) => doc.data());
 
             initialData.forEach((item) => {
                 item.created_at = item.created_at.toDate();
             });
+
+            // sort the data by latest date
+            initialData.sort((a, b) => b.created_at.getTime() - a.created_at.getTime());
 
             setWeightData(initialData);
         });

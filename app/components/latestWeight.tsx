@@ -3,6 +3,7 @@ import {ArrowDown, ArrowUp} from "flowbite-react-icons/outline";
 import {useEffect, useState} from "react";
 import {DocumentData} from "firebase/firestore";
 import {filterData} from "~/domain/filterData";
+import formatData from "~/domain/formatData";
 
 interface CurrentWeightProps {
     weightData: DocumentData[] | undefined;
@@ -13,23 +14,28 @@ const LatestWeight = ({weightData = [], timeRange}: CurrentWeightProps) => {
     const [percentageChange, setPercentageChange] = useState(0);
     const [currentWeight, setCurrentWeight] = useState(0);
 
-    const filteredData = filterData(weightData, timeRange);
-
     useEffect(() => {
+        const filteredData = filterData(weightData, timeRange);
+
         if (filteredData.length >= 2) {
-            const currentWeight = filteredData[filteredData.length - 1].value[0];
-            const previousWeight = filteredData[filteredData.length - 1].value[1];
+            const formattedData = formatData(filteredData, timeRange);
+
+            const currentWeight = formattedData[Object.keys(formattedData)[Object.keys(formattedData).length - 1]].reduce((acc, item) => acc + item, 0) / formattedData[Object.keys(formattedData)[Object.keys(formattedData).length - 1]].length;
+            const previousWeight = formattedData[Object.keys(formattedData)[Object.keys(formattedData).length - 2]].reduce((acc, item) => acc + item, 0) / formattedData[Object.keys(formattedData)[Object.keys(formattedData).length - 2]].length;
 
             const change = ((currentWeight - previousWeight) / previousWeight) * 100;
 
             setCurrentWeight(Math.round(currentWeight * 100) / 100);
             setPercentageChange(isNaN(change) ? 0 : change);
 
-        } else {
-            const weight = filteredData.length > 0 ? filteredData[filteredData.length - 1].value[0] : 0;
+        } else if (filteredData.length === 1) {
+            const weight = filteredData[0].value.reduce((acc, item) => acc + item, 0) / filteredData[0].value.length;
             setCurrentWeight(Math.round(weight * 100) / 100);
+        } else {
+            setPercentageChange(0);
+            setCurrentWeight(0);
         }
-    }, [filteredData, timeRange]);
+    }, [weightData, timeRange]);
 
     return (
         <Card className="flex-grow bg-red-50 shadow-none">
