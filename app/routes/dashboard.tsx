@@ -7,6 +7,7 @@ import AverageWeight from "~/components/averageWeight";
 import WeightChart from "~/components/weightChart";
 import Navigation from "~/components/navigation";
 import ImageDisplay from "~/components/imageDisplay";
+import LogTable from "~/components/logTable";
 
 
 export default function Dashboard() {
@@ -36,7 +37,7 @@ export default function Dashboard() {
                         <Tabs.Item title={'Monthly'} active={activeTab === 'monthly'}/>
                     </Tabs>
                 </div>
-                <div className={'flex flex-col gap-5 md:mx-0 mx-4'}>
+                <div className={'flex flex-col gap-5 md:mx-0 mx-4 mb-3'}>
                     <div className={'flex flex-row gap-4 items-stretch'}>
                         <LatestWeight weightData={weightData} timeRange={activeTab}/>
                         <AverageWeight weightData={weightData} timeRange={activeTab}/>
@@ -51,6 +52,7 @@ export default function Dashboard() {
                         <ImageDisplay/>
                     </div>
                 </div>
+                <LogTable weightData={weightData}/>
             </div>
         </>
     );

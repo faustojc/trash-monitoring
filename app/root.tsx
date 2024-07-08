@@ -2,7 +2,7 @@ import {Links, Meta, Outlet, Scripts, ScrollRestoration,} from "@remix-run/react
 import CSS from "../css/app.css?url";
 import React from "react";
 import {LinksFunction} from "@remix-run/node";
-import {ThemeModeScript} from "flowbite-react";
+import {Flowbite, ThemeModeScript} from "flowbite-react";
 import {Toaster} from "react-hot-toast";
 
 export function Layout({children}: Readonly<{ children: React.ReactNode }>) {
@@ -17,10 +17,12 @@ export function Layout({children}: Readonly<{ children: React.ReactNode }>) {
             <title>Trash Monitoring</title>
         </head>
         <body style={{height: "100vh"}}>
-        <div><Toaster/></div>
-        {children}
-        <ScrollRestoration/>
-        <Scripts/>
+        <Flowbite>
+            <div><Toaster/></div>
+            {children}
+            <ScrollRestoration/>
+            <Scripts/>
+        </Flowbite>
         </body>
         </html>
     );
