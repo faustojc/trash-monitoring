@@ -6,7 +6,7 @@ import formatData from "~/domain/formatData";
 
 interface ChartProps {
     weightData: DocumentData[];
-    timeRange: "daily" | "weekly" | "monthly";
+    timeRange: string;
 }
 
 export default function WeightChart({weightData, timeRange}: Readonly<ChartProps>) {
@@ -23,8 +23,10 @@ export default function WeightChart({weightData, timeRange}: Readonly<ChartProps
         };
     });
 
+    const minDomain = chartData.length === 0 ? 'dataMin' : 0;
+
     return (
-        <ResponsiveContainer width={"100%"} height={400}>
+        <ResponsiveContainer width={"100%"} height={450}>
             <BarChart
                 data={chartData.length === 0 ? [{created_at: "No data", value: 0}] : chartData}
                 margin={{top: 5, bottom: 30}}
@@ -35,11 +37,22 @@ export default function WeightChart({weightData, timeRange}: Readonly<ChartProps
                        angle={(chartData.length > 8 ? 45 : 0)}
                        textAnchor={chartData.length > 8 ? "start" : "middle"}
                        allowDataOverflow={false}
+                       padding={{left: 5, right: 5}}
                 />
-                <YAxis domain={['dataMin', 'auto']}/>
+                <YAxis domain={[minDomain, 'auto']}
+                       minTickGap={10}
+                />
                 <Tooltip content={<CustomTooltip/>}/>
                 <Bar dataKey="value" fill={'#84c4d8'} barSize={chartData.length > 8 ? '4%' : '10%'} isAnimationActive={true}/>
             </BarChart>
         </ResponsiveContainer>
+    );
+}
+
+const XAxisLabel = ({label}: {label: string}) => {
+    return (
+        <p className={'mt-3'}>
+            {label}
+        </p>
     );
 }

@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {collection, DocumentData, getDocs, onSnapshot} from "firebase/firestore";
 import {firebaseDatabase} from "~/domain/firebase";
 
-export function useWeightData(timeRange: "daily" | "weekly" | "monthly" = "daily") {
+export function useWeightData() {
     const [weightData, setWeightData] = useState<DocumentData[]>([]);
 
     const unsubscribe = onSnapshot(
@@ -13,6 +13,7 @@ export function useWeightData(timeRange: "daily" | "weekly" | "monthly" = "daily
                 .forEach((change) => {
                     const item = change.doc.data();
                     item.created_at = item.created_at.toDate();
+                    item.value = (item.value <= 0) ? 0 : item.value;
 
                     setWeightData((prev) => {
                         const existingEntry = prev.some(
@@ -38,6 +39,7 @@ export function useWeightData(timeRange: "daily" | "weekly" | "monthly" = "daily
 
             initialData.forEach((item) => {
                 item.created_at = item.created_at.toDate();
+                item.value = (item.value <= 0) ? 0 : item.value;
             });
 
             // sort the data by latest date

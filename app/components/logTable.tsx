@@ -16,7 +16,7 @@ const LogTable = ({weightData}: LogTableProps) => {
                     <Table.HeadCell>Date</Table.HeadCell>
                 </Table.Head>
                 <Table.Body className={'divide-y'}>
-                    {weightData.slice(0, 10).map((item: DocumentData, index) => (
+                    {weightData.map((item: DocumentData, index) => (
                         <Table.Row key={index} className={'bg-white dark:border-gray-700 dark:bg-gray-800'}>
                             <Table.Cell className={'whitespace-nowrap font-medium text-gray-900 dark:text-white'}>{index + 1}</Table.Cell>
                             <Table.Cell>{item.value} kg</Table.Cell>

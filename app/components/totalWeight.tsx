@@ -5,7 +5,7 @@ import {filterData} from "~/domain/filterData";
 
 interface AverageWeightProps {
     weightData: DocumentData[];
-    timeRange: "daily" | "weekly" | "monthly";
+    timeRange: string;
 }
 
 const TotalWeight = ({weightData = [], timeRange}: AverageWeightProps) => {

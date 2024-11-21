@@ -4,7 +4,7 @@ import {DocumentData} from "firebase/firestore";
 
 interface CurrentWeightProps {
     weightData: DocumentData[] | undefined;
-    timeRange: "daily" | "weekly" | "monthly";
+    timeRange: string;
 }
 
 const LatestWeight = ({weightData = [], timeRange}: CurrentWeightProps) => {

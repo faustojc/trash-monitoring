@@ -1,7 +1,7 @@
 import {DocumentData} from "firebase/firestore";
 import {endOfDay, endOfWeek, endOfYear, startOfDay, startOfWeek, startOfYear} from "date-fns";
 
-export function filterData(weightData: DocumentData[], timeRange: "daily" | "weekly" | "monthly" = "daily") {
+export function filterData(weightData: DocumentData[], timeRange: string = "daily") {
     const now = new Date();
 
     let filteredData: { 'created_at': Date, value: number[] }[] = [];
@@ -11,12 +11,9 @@ export function filterData(weightData: DocumentData[], timeRange: "daily" | "wee
     if (timeRange === 'daily') {
         startOfCurrentRange = startOfDay(now);
         endOfCurrentRange = endOfDay(now);
-    } else if (timeRange === 'weekly') {
+    } else {
         startOfCurrentRange = startOfWeek(now);
         endOfCurrentRange = endOfWeek(now);
-    } else {
-        startOfCurrentRange = startOfYear(now);
-        endOfCurrentRange = endOfYear(now);
     }
 
 
@@ -31,11 +28,8 @@ export function filterData(weightData: DocumentData[], timeRange: "daily" | "wee
                 case 'daily':
                     key = date.getHours();
                     break;
-                case 'weekly':
+                default:
                     key = date.getDay();
-                    break;
-                case 'monthly':
-                    key = date.getMonth();
                     break;
             }
 
@@ -67,7 +61,7 @@ const filterDateRange = (weightData: DocumentData[], startDate: Date, endDate: D
     });
 }
 
-const predicate = (item: { created_at: Date, value: number[] }, key: number, timeRange: "daily" | "weekly" | "monthly" = "daily") => {
+const predicate = (item: { created_at: Date; value: number[] }, key: number, timeRange?: string) => {
     switch (timeRange) {
         case 'daily':
             return item.created_at.getHours() === key;
