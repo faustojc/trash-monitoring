@@ -4,22 +4,22 @@ import {useEffect, useState} from "react";
 
 const AlertTooltip = ({weightData}: { weightData: DocumentData[] }) => {
     const [showTooltip, setShowTooltip] = useState(false);
-    const [hasShown, setHasShown] = useState(false);
+    const [prevWeight, setPrevWeight] = useState(weightData[0]?.value);
 
     useEffect(() => {
+        let timer: NodeJS.Timeout;
+
         if (weightData.length > 0) {
-            if (weightData[0].value === 0 && !hasShown) {
-                setShowTooltip(true);
-                setHasShown(true);
-
-                const timer = setTimeout(() => {
-                    setShowTooltip(false);
-                }, 3000);
-
-                return () => clearTimeout(timer);
-            } else if (weightData[0].value !== 0) {
+            if (weightData[0].value === 0 && prevWeight === 0) {
                 setShowTooltip(false);
             }
+            else if (weightData[0].value === 0 && prevWeight !== 0) {
+                setShowTooltip(true);
+                timer = setTimeout(() => setShowTooltip(false), 3000);
+            }
+
+            setPrevWeight(weightData[0].value);
+            return () => clearTimeout(timer);
         }
     }, [weightData]);
 
